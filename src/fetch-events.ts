@@ -11,6 +11,7 @@ const NULL = '\u0000'
 
 /**
  * @throws {HTTPClientError}
+ * @throws {AbortError}
  */
 export async function* fetchEvents(
   _url: string

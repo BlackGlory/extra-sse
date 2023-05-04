@@ -26,6 +26,7 @@ function stringifyEvent(event: IEvent): IterableIterator<string>
 ```ts
 /**
  * @throws {HTTPClientError}
+ * @throws {AbortError}
  */
 function fetchEvents(
   url: string
