@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/BlackGlory/extra-sse/compare/v0.1.0...v0.2.0) (2023-06-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **fetch-events:** Removed `options.signal` because it can be easily replaced by
+`Request.signal`
+
+* **fetch-events:** the first argument now accept more types ([d77eec1](https://github.com/BlackGlory/extra-sse/commit/d77eec1821b636669f4783bd8dcb8467efaec52c))
+
 ## 0.1.0 (2023-05-04)
 
 
