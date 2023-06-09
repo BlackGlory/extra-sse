@@ -1,4 +1,4 @@
-import { go, assert, isntUndefined, isntNull } from '@blackglory/prelude'
+import { go, assert, isntUndefined, isntNull, Getter, isFunction } from '@blackglory/prelude'
 import { TextDecoderStream, isNodeJSReadableStream, toReadableStream, toAsyncIterableIterator } from 'extra-stream'
 import { fetch, Request } from 'extra-fetch'
 import { fromCode, HTTPError, HTTPClientError } from '@blackglory/http-status'
@@ -12,7 +12,7 @@ const NULL = '\u0000'
  * @throws {AbortError}
  */
 export async function* fetchEvents(
-  input: URL | RequestInfo
+  input: URL | string | Getter<Request>
 , {
     lastEventId
   , autoReconnect = true
@@ -27,7 +27,7 @@ export async function* fetchEvents(
   while (true) {
     try {
       const req = go(() => {
-        const req = new Request(input)
+        const req = new Request(isFunction(input) ? input() : input)
         if (lastEventId) {
           req.headers.set('Last-Event-ID', lastEventId)
         }

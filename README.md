@@ -29,7 +29,7 @@ function stringifyEvent(event: IEvent): IterableIterator<string>
  * @throws {AbortError}
  */
 function fetchEvents(
-  input: URL | RequestInfo
+  input: string | URL | Getter<Request>
 , options?: {
     lastEventId?: string
 

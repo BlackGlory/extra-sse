@@ -237,7 +237,7 @@ describe('fetchEvents', () => {
       controller.abort()
 
       const iter = fetchEvents(
-        new Request('http://localhost/200', { signal: controller.signal })
+        () => new Request('http://localhost/200', { signal: controller.signal })
       , { autoReconnect: true }
       )
       const err = await getErrorPromise(toArrayAsync(iter))
@@ -249,7 +249,7 @@ describe('fetchEvents', () => {
       const controller = new AbortController()
 
       const iter = fetchEvents(
-        new Request('http://localhost/200', { signal: controller.signal })
+        () => new Request('http://localhost/200', { signal: controller.signal })
       , { autoReconnect: true }
       )
       const result = await toArrayAsync(takeAsync(iter, 1))
@@ -266,8 +266,9 @@ describe('fetchEvents', () => {
     })
 
     test('abort signal', async () => {
+      const signal = timeoutSignal(1000) 
       const iter = fetchEvents(
-        new Request('http://localhost/200', { signal: timeoutSignal(1000) })
+        () => new Request('http://localhost/200', { signal })
       , { autoReconnect: true }
       )
       const err = await getErrorPromise(toArrayAsync(iter))
@@ -494,8 +495,9 @@ describe('fetchEvents', () => {
       })
 
       test('5xx', async () => {
+        const signal = timeoutSignal(1000)
         const iter = fetchEvents(
-          new Request('http://localhost/500', { signal: timeoutSignal(1000) })
+          () => new Request('http://localhost/500', { signal })
         , { autoReconnect: true }
         )
         const err = await getErrorPromise(toArrayAsync(iter))
