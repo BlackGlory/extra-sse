@@ -212,6 +212,23 @@ describe('fetchEvents', () => {
         }
       ])
     })
+
+    test('edge: json', async () => {
+      const iter = fetchEvents('http://localhost/edge-json', {
+        autoReconnect: false
+      })
+      const result = await toArrayAsync(iter)
+
+      expect(result).toStrictEqual([
+        {
+          comment: undefined
+        , event: undefined
+        , data: '{ "foo": "bar" }'
+        , id: undefined
+        , retry: undefined
+        }
+      ])
+    })
   })
 
   describe('signal', () => {

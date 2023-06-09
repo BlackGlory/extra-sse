@@ -118,7 +118,7 @@ function parseEventText(eventText: string): IEvent {
       field: string
       value: string
     } => {
-      const result = line.match(/^(?<field>.*):(?<value>.*)$/)
+      const result = line.match(/^(?<field>.*?):(?<value>.*)$/)
       if (result) {
         return {
           field: result.groups!.field

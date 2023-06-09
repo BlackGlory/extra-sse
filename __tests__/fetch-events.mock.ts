@@ -288,4 +288,19 @@ export const server = setupServer(
       )
     }
   )
+
+, rest.get(
+    'http://localhost/edge-json'
+  , (req, res, ctx) => {
+      return res(
+        ctx.status(200)
+      , ctx.set('Connection', 'keep-alive')
+      , ctx.set('Content-Type', 'text/event-stream')
+      , ctx.body(
+          'data: { "foo": "bar" }' + '\n'
+        + '\n'
+        )
+      )
+    }
+  )
 )
