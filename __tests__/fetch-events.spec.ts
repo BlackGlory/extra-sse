@@ -1,5 +1,6 @@
 import { server } from './fetch-events.mock.js'
 import { fetchEvents } from '@src/fetch-events.js'
+import { Request } from 'extra-fetch'
 import { takeAsync, toArrayAsync } from 'iterable-operator'
 import { getErrorPromise } from 'return-style'
 import { NotFound, InternalServerError } from '@blackglory/http-status'
@@ -51,9 +52,7 @@ describe('fetchEvents', () => {
     })
 
     test('single comment field', async () => {
-      const iter = fetchEvents('http://localhost/single-comment-field', {
-        autoReconnect: false
-      })
+      const iter = fetchEvents('http://localhost/single-comment-field', { autoReconnect: false })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -68,9 +67,7 @@ describe('fetchEvents', () => {
     })
 
     test('multiple comment fields', async () => {
-      const iter = fetchEvents('http://localhost/multiple-comment-fields', {
-        autoReconnect: false
-      })
+      const iter = fetchEvents('http://localhost/multiple-comment-fields', { autoReconnect: false })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -86,9 +83,7 @@ describe('fetchEvents', () => {
     })
 
     test('single event field', async () => {
-      const iter = fetchEvents('http://localhost/single-event-field', {
-        autoReconnect: false
-      })
+      const iter = fetchEvents('http://localhost/single-event-field', { autoReconnect: false })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -103,9 +98,7 @@ describe('fetchEvents', () => {
     })
 
     test('multiple event fields', async () => {
-      const iter = fetchEvents('http://localhost/multiple-event-fields', {
-        autoReconnect: false
-      })
+      const iter = fetchEvents('http://localhost/multiple-event-fields', { autoReconnect: false })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -226,10 +219,10 @@ describe('fetchEvents', () => {
       const controller = new AbortController()
       controller.abort()
 
-      const iter = fetchEvents('http://localhost/200', {
-        autoReconnect: true
-      , signal: controller.signal
-      })
+      const iter = fetchEvents(
+        new Request('http://localhost/200', { signal: controller.signal })
+      , { autoReconnect: true }
+      )
       const err = await getErrorPromise(toArrayAsync(iter))
 
       expect(err).toBeInstanceOf(AbortError)
@@ -238,10 +231,10 @@ describe('fetchEvents', () => {
     test('signal is not aborted', async () => {
       const controller = new AbortController()
 
-      const iter = fetchEvents('http://localhost/200', {
-        autoReconnect: true
-      , signal: controller.signal
-      })
+      const iter = fetchEvents(
+        new Request('http://localhost/200', { signal: controller.signal })
+      , { autoReconnect: true }
+      )
       const result = await toArrayAsync(takeAsync(iter, 1))
 
       expect(result).toStrictEqual([
@@ -256,10 +249,10 @@ describe('fetchEvents', () => {
     })
 
     test('abort signal', async () => {
-      const iter = fetchEvents('http://localhost/200', {
-        autoReconnect: true
-      , signal: timeoutSignal(1000)
-      })
+      const iter = fetchEvents(
+        new Request('http://localhost/200', { signal: timeoutSignal(1000) })
+      , { autoReconnect: true }
+      )
       const err = await getErrorPromise(toArrayAsync(iter))
 
       expect(err).toBeInstanceOf(AbortError)
@@ -484,10 +477,10 @@ describe('fetchEvents', () => {
       })
 
       test('5xx', async () => {
-        const iter = fetchEvents('http://localhost/500', {
-          autoReconnect: true
-        , signal: timeoutSignal(1000)
-        })
+        const iter = fetchEvents(
+          new Request('http://localhost/500', { signal: timeoutSignal(1000) })
+        , { autoReconnect: true }
+        )
         const err = await getErrorPromise(toArrayAsync(iter))
 
         expect(err).toBeInstanceOf(AbortError)

@@ -29,13 +29,12 @@ function stringifyEvent(event: IEvent): IterableIterator<string>
  * @throws {AbortError}
  */
 function fetchEvents(
-  url: string
+  input: URL | RequestInfo
 , options?: {
     lastEventId?: string
 
     autoReconnect?: boolean = true
     retry?: number = 0
-
-    signal?: AbortSignal
+  }
 ): AsyncIterableIterator<IEvent>
 ```

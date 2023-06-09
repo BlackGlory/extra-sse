@@ -1,8 +1,6 @@
 import { go, assert, isntUndefined, isntNull } from '@blackglory/prelude'
 import { TextDecoderStream, isNodeJSReadableStream, toReadableStream, toAsyncIterableIterator } from 'extra-stream'
-import { fetch } from 'extra-fetch'
-import { get } from 'extra-request'
-import { url, header, signal } from 'extra-request/transformers'
+import { fetch, Request } from 'extra-fetch'
 import { fromCode, HTTPError, HTTPClientError } from '@blackglory/http-status'
 import { delay } from 'extra-promise'
 import { IEvent } from './types.js'
@@ -14,31 +12,28 @@ const NULL = '\u0000'
  * @throws {AbortError}
  */
 export async function* fetchEvents(
-  _url: string
+  input: URL | RequestInfo
 , {
     lastEventId
-
   , autoReconnect = true
   , retry = 0
-
-  , signal: abortSignal
   }: {
     lastEventId?: string
 
     autoReconnect?: boolean
     retry?: number
-
-    signal?: AbortSignal
   } = {}
 ): AsyncIterableIterator<IEvent> {
-
   while (true) {
     try {
-      const res = await fetch(get(
-        url(_url)
-      , isntUndefined(lastEventId) && header('Last-Event-ID', lastEventId)
-      , abortSignal && signal(abortSignal)
-      ))
+      const req = go(() => {
+        const req = new Request(input)
+        if (lastEventId) {
+          req.headers.set('Last-Event-ID', lastEventId)
+        }
+        return req
+      })
+      const res = await fetch(req)
       if (res.status === 204) break
       if (res.status >= 400) throw fromCode(res.status)
       assert(

@@ -2411,17 +2411,6 @@ extra-rand@^0.1.1:
   resolved "https://registry.yarnpkg.com/extra-rand/-/extra-rand-0.1.4.tgz#b05771292abd78f03d1b86be56c76117e22114c7"
   integrity sha512-6EI0uiu6wiRVrrZBPEFeFtJ8OVl644+QykxRRSEPN6fYa28JnkUP9k2uF8ZOxvm/2NG8wjNmSNFlSecLOYZPMA==
 
-extra-request@^8.5.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/extra-request/-/extra-request-8.5.0.tgz#0a2f551af4a945742f79f5325eea041327e78516"
-  integrity sha512-q68viatY8nz5S/ymGSxxWga40TQbaQCKCu4I2LGJBlFcFAnjLD04auicTq84uvNzGMWxoKde/FCLiLmmfEPSyA==
-  dependencies:
-    "@blackglory/prelude" "^0.3.2"
-    extra-utils "^5.1.1"
-    justypes "^4.2.0"
-    papaparse "^5.4.1"
-    url-operator "^0.3.0"
-
 extra-stream@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/extra-stream/-/extra-stream-0.3.0.tgz#0222579faa1d4b736ff3387da795f5a8053c7acb"
@@ -4312,11 +4301,6 @@ p-try@^2.0.0:
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==
 
-papaparse@^5.4.1:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-5.4.1.tgz#f45c0f871853578bd3a30f92d96fdcfb6ebea127"
-  integrity sha512-HipMsgJkZu8br23pW15uvo6sib6wne/4woLZPlFf3rpDyMe9ywEXUsuD7+6K9PRkJlVT51j/sCOYDKGGS3ZJrw==
-
 parent-module@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/parent-module/-/parent-module-1.0.1.tgz#691d2709e78c79fae3a156622452d00762caaaa2"
@@ -5297,13 +5281,6 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
-
-url-operator@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/url-operator/-/url-operator-0.3.0.tgz#9711d065b529b230740bb7813aade1d663d17807"
-  integrity sha512-Gl0UX/17xyVms7grwwb5ZXAttjhV9122hqgYGiodiiJk5o2UQQtaMY9sZ9xkQa7Jf59+6aDWPTL4tWYsXyB3Ew==
-  dependencies:
-    "@blackglory/prelude" "^0.3.1"
 
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
