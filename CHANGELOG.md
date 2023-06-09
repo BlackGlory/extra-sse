@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/BlackGlory/extra-sse/compare/v0.2.1...v0.3.0) (2023-06-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **fetchEvents:** Changed the signature of `fetchEvents`
+
+### Bug Fixes
+
+* **fetchEvents:** change `Request` to `Getter<Request>` for support automatic reconnection ([fadfd0c](https://github.com/BlackGlory/extra-sse/commit/fadfd0ccedee40eb88a311ef4acaa5cb89528483))
+
 ### [0.2.1](https://github.com/BlackGlory/extra-sse/compare/v0.2.0...v0.2.1) (2023-06-09)
 
 
