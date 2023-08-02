@@ -5,8 +5,6 @@ import { takeAsync, toArrayAsync } from 'iterable-operator'
 import { getErrorPromise } from 'return-style'
 import { NotFound, InternalServerError } from '@blackglory/http-status'
 import { AbortController, AbortError, timeoutSignal } from 'extra-abort'
-import { delay } from 'extra-promise'
-import { pass } from '@blackglory/prelude'
 import { jest } from '@jest/globals'
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -573,20 +571,11 @@ describe('fetchEvents', () => {
   })
 
   test('onOpen', async () => {
-    const controller = new AbortController()
     const onOpen = jest.fn()
 
-    try {
-      const iter = fetchEvents(
-        () => new Request('http://localhost/200-pending', { signal: controller.signal })
-      , { onOpen }
-      )
-      iter.next().catch(pass)
-      await delay(100)
+    const iter = fetchEvents('http://localhost/200', { onOpen, autoReconnect: true })
+    await toArrayAsync(takeAsync(iter, 2))
 
-      expect(onOpen).toBeCalled()
-    } finally {
-      controller.abort()
-    }
+    expect(onOpen).toBeCalledTimes(2)
   })
 })
