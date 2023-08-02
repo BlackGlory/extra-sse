@@ -17,11 +17,18 @@ export async function* fetchEvents(
     lastEventId
   , autoReconnect = true
   , retry = 0
+  , onOpen
   }: {
     lastEventId?: string
 
     autoReconnect?: boolean
     retry?: number
+
+    /**
+     * The handler is called when a connection is properly established.
+     * The handler is also called when the connection is re-established.
+     */
+    onOpen?: () => void
   } = {}
 ): AsyncIterableIterator<IEvent> {
   while (true) {
@@ -40,6 +47,7 @@ export async function* fetchEvents(
         res.headers.get('content-type') === 'text/event-stream'
       , 'The response is not a SSE stream'
       )
+      onOpen?.()
 
       const stream: ReadableStream<Uint8Array> = go(() => {
         assert(isntNull(res.body), 'The response has no body')

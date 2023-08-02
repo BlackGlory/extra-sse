@@ -35,6 +35,12 @@ function fetchEvents(
 
     autoReconnect?: boolean = true
     retry?: number = 0
+
+    /**
+     * The handler is called when a connection is properly established.
+     * The handler is also called when the connection is re-established.
+     */
+    onOpen?: () => void
   }
 ): AsyncIterableIterator<IEvent>
 ```

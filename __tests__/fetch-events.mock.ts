@@ -14,6 +14,14 @@ export const server = setupServer(
     )
   })
 
+, rest.get('http://localhost/200-pending', (req, res, ctx) => {
+    return res(
+      ctx.status(200)
+    , ctx.set('Connection', 'keep-alive')
+    , ctx.set('Content-Type', 'text/event-stream')
+    )
+  })
+
 , rest.get('http://localhost/204', (req, res, ctx) => {
     return res(ctx.status(204))
   })
