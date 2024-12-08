@@ -72,10 +72,9 @@ export async function* fetchEvents(
       for await (const newText of toAsyncIterableIterator(decodedStream)) {
         remainingText += newText
 
-        // 此处使用的正则表达式会将`foo\r\nbar`里的`\r\n`视作两个换行符, 这可能会违反标准.
         const eventTexts = remainingText.split(/[\r\n|\r|\n]{2}/)
-        while (eventTexts.length > 1) {
-          const eventText = eventTexts.shift()!
+        let eventText: string | undefined
+        while (eventText = eventTexts.shift()) {
           const event = parseEventText(eventText)
 
           if (isntUndefined(event.id)) {
@@ -128,9 +127,14 @@ function parseEventText(eventText: string): IEvent {
     } => {
       const result = line.match(/^(?<field>.*?):(?<value>.*)$/)
       if (result) {
+        const { field, value } = result.groups as {
+          field: string
+          value: string
+        }
+
         return {
-          field: result.groups!.field
-        , value: trimFirstSpace(result.groups!.value)
+          field
+        , value: trimFirstSpace(value)
         }
       } else {
         return { field: line, value: '' }
