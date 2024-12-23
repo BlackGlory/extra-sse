@@ -72,7 +72,7 @@ export async function* fetchEvents(
       for await (const newText of toAsyncIterableIterator(decodedStream)) {
         remainingText += newText
 
-        const eventTexts = remainingText.split(/[\r\n|\r|\n]{2}/)
+        const eventTexts = remainingText.split(/(?:\r\n|\r|\n){2}/)
         let eventText: string | undefined
         while (eventText = eventTexts.shift()) {
           const event = parseEventText(eventText)
