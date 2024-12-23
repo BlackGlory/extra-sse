@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/BlackGlory/extra-sse/compare/v0.3.1...v0.3.2) (2024-12-23)
+
+
+### Bug Fixes
+
+* regex ([29ca462](https://github.com/BlackGlory/extra-sse/commit/29ca462c99cabba28b22a61b54d14e117d0629e1))
+* regex ([25ed834](https://github.com/BlackGlory/extra-sse/commit/25ed8347ebd444a4496caf87aaf00e29fe4cc89a))
+
 ### [0.3.1](https://github.com/BlackGlory/extra-sse/compare/v0.3.0...v0.3.1) (2023-08-02)
 
 
