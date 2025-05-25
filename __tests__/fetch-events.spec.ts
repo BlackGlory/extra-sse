@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeAll, beforeEach, afterAll, vi } from 'vitest'
 import { server } from './fetch-events.mock.js'
 import { fetchEvents } from '@src/fetch-events.js'
 import { Request } from 'extra-fetch'
@@ -5,7 +6,6 @@ import { takeAsync, toArrayAsync } from 'iterable-operator'
 import { getErrorPromise } from 'return-style'
 import { NotFound, InternalServerError } from '@blackglory/http-status'
 import { AbortController, AbortError, timeoutSignal } from 'extra-abort'
-import { jest } from '@jest/globals'
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 beforeEach(() => server.resetHandlers())
@@ -571,7 +571,7 @@ describe('fetchEvents', () => {
   })
 
   test('onOpen', async () => {
-    const onOpen = jest.fn()
+    const onOpen = vi.fn()
 
     const iter = fetchEvents('http://localhost/200', { onOpen, autoReconnect: true })
     await toArrayAsync(takeAsync(iter, 2))

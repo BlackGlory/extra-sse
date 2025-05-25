@@ -1,8 +1,9 @@
+import { describe, test, expect } from 'vitest'
 import { stringifyEvent } from '@src/stringify-event.js'
 import { toArray } from '@blackglory/prelude'
 
 describe('stringifyEvent', () => {
-  test('generic', () => {
+  test('general', () => {
     const comment = 'comment'
     const event = 'event'
     const data = 'data'
