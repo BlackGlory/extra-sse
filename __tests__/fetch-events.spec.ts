@@ -30,8 +30,30 @@ describe('fetchEvents', () => {
       ])
     })
 
-    test('multiple events', async () => {
-      const iter = fetchEvents('http://localhost/multiple-events', { autoReconnect: false })
+    test('multiple events (single packet)', async () => {
+      const iter = fetchEvents('http://localhost/multiple-events-single-packet', { autoReconnect: false })
+      const result = await toArrayAsync(iter)
+
+      expect(result).toStrictEqual([
+        {
+          comment: 'foo'
+        , event: 'foo'
+        , data: 'foo'
+        , id: 'foo'
+        , retry: 1
+        }
+      , {
+          comment: 'bar'
+        , event: 'bar'
+        , data: 'bar'
+        , id: 'bar'
+        , retry: 2
+        }
+      ])
+    })
+
+    test('multiple events (multiple packets)', async () => {
+      const iter = fetchEvents('http://localhost/multiple-events-multiple-packets', { autoReconnect: false })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([

@@ -1,5 +1,8 @@
 import { setupServer } from 'msw/node'
 import { http } from 'msw'
+import { delay } from 'extra-promise'
+import { toReadableStream } from 'extra-stream'
+import { go } from '@blackglory/prelude'
 
 export const server = setupServer(
   http.get('http://localhost/200', () => {
@@ -115,7 +118,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-events', () => {
+, http.get('http://localhost/multiple-events-single-packet', () => {
     return new Response(
       ': foo' + '\n'
     + 'event: foo' + '\n'
@@ -130,6 +133,35 @@ export const server = setupServer(
     + 'id: bar' + '\n'
     + 'retry: 2' + '\n'
     + '\n'
+    , {
+        status: 200
+      , headers: {
+          'Connection': 'keep-alive'
+        , 'Content-Type': 'text/event-stream'
+        }
+      }
+    )
+  })
+
+, http.get('http://localhost/multiple-events-multiple-packets', () => {
+    return new Response(
+      toReadableStream(go(async function* () {
+        yield ': foo' + '\n'
+            + 'event: foo' + '\n'
+            + 'data: foo' + '\n'
+            + 'id: foo' + '\n'
+            + 'retry: 1' + '\n'
+            + '\n'
+
+        await delay(100)
+
+        yield ': bar' + '\n'
+            + 'event: bar' + '\n'
+            + 'data: bar' + '\n'
+            + 'id: bar' + '\n'
+            + 'retry: 2' + '\n'
+            + '\n'
+      }))
     , {
         status: 200
       , headers: {
