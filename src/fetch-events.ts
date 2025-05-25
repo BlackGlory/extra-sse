@@ -72,9 +72,12 @@ export async function* fetchEvents(
       for await (const newText of toAsyncIterableIterator(decodedStream)) {
         remainingText += newText
 
+        // 如果remainingText不包含完整事件, 则返回`[剩余文本]`.
+        // 如果remainingText包含完整事件, 则返回`[事件1, 事件2, ..., 事件N, 剩余文本]`,
+        // remainingText刚好容纳下事件时, 剩余文本为空字符串.
         const eventTexts = remainingText.split(/(?:\r\n){2}|\r{2}|\n{2}/)
-        let eventText: string | undefined
-        while (eventText = eventTexts.shift()) {
+        while (eventTexts.length > 1) {
+          const eventText = eventTexts.shift()!
           const event = parseEventText(eventText)
 
           if (isntUndefined(event.id)) {
@@ -86,6 +89,7 @@ export async function* fetchEvents(
 
           yield event
         }
+        // 处理到此处, eventTexts仅可能有1个元素.
         remainingText = eventTexts[0]
       }
 
