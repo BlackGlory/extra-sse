@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/BlackGlory/extra-sse/compare/v0.3.2...v0.3.3) (2025-05-25)
+
+
+### Bug Fixes
+
+* parser ([ed024ee](https://github.com/BlackGlory/extra-sse/commit/ed024ee63a4155f461fec7596059aab4eb35d980))
+
 ### [0.3.2](https://github.com/BlackGlory/extra-sse/compare/v0.3.1...v0.3.2) (2024-12-23)
 
 
