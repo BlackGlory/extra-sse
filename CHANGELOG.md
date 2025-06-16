@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/BlackGlory/extra-sse/compare/v0.4.0...v0.5.0) (2025-06-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* The module requires `extra-fetch@^5.0.1`
+
+* upgrade dependencies ([bd14db6](https://github.com/BlackGlory/extra-sse/commit/bd14db6fd8fdee76225d94cdf0b0209cf60e474e))
+
 ## [0.4.0](https://github.com/BlackGlory/extra-sse/compare/v0.3.3...v0.4.0) (2025-05-25)
 
 
