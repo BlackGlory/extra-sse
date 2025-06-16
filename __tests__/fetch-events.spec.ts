@@ -1,22 +1,24 @@
-import { describe, test, expect, beforeAll, beforeEach, afterAll, vi } from 'vitest'
-import { server } from './fetch-events.mock.js'
+import { describe, test, expect, beforeAll, vi, afterAll } from 'vitest'
+import { buildServer } from './fetch-events.mock.js'
 import { fetchEvents } from '@src/fetch-events.js'
 import { Request } from 'extra-fetch'
 import { takeAsync, toArrayAsync } from 'iterable-operator'
 import { getErrorPromise } from 'return-style'
 import { NotFound, InternalServerError } from '@blackglory/http-status'
 import { AbortController, AbortError, timeoutSignal } from 'extra-abort'
+import { startService, stopService, getAddress } from './utils.js'
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-beforeEach(() => server.resetHandlers())
-afterAll(() => server.close())
+beforeAll(() => startService(buildServer))
+afterAll(stopService)
 
 const TIME_ERROR = 100
 
 describe('fetchEvents', () => {
   describe('parse', () => {
     test('single event', async () => {
-      const iter = fetchEvents('http://localhost/single-event', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/single-event`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -31,7 +33,9 @@ describe('fetchEvents', () => {
     })
 
     test('multiple events (single packet)', async () => {
-      const iter = fetchEvents('http://localhost/multiple-events-single-packet', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/multiple-events-single-packet`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -53,7 +57,9 @@ describe('fetchEvents', () => {
     })
 
     test('multiple events (multiple packets)', async () => {
-      const iter = fetchEvents('http://localhost/multiple-events-multiple-packets', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/multiple-events-multiple-packets`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -75,7 +81,9 @@ describe('fetchEvents', () => {
     })
 
     test('single comment field', async () => {
-      const iter = fetchEvents('http://localhost/single-comment-field', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/single-comment-field`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -90,7 +98,9 @@ describe('fetchEvents', () => {
     })
 
     test('multiple comment fields', async () => {
-      const iter = fetchEvents('http://localhost/multiple-comment-fields', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/multiple-comment-fields`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -106,7 +116,9 @@ describe('fetchEvents', () => {
     })
 
     test('single event field', async () => {
-      const iter = fetchEvents('http://localhost/single-event-field', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/single-event-field`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -121,7 +133,9 @@ describe('fetchEvents', () => {
     })
 
     test('multiple event fields', async () => {
-      const iter = fetchEvents('http://localhost/multiple-event-fields', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/multiple-event-fields`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(iter)
 
       expect(result).toStrictEqual([
@@ -136,7 +150,7 @@ describe('fetchEvents', () => {
     })
 
     test('single data field', async () => {
-      const iter = fetchEvents('http://localhost/single-data-field', {
+      const iter = fetchEvents(`${getAddress()}/single-data-field`, {
         autoReconnect: false
       })
       const result = await toArrayAsync(iter)
@@ -153,7 +167,7 @@ describe('fetchEvents', () => {
     })
 
     test('multiple data fields', async () => {
-      const iter = fetchEvents('http://localhost/multiple-data-fields', {
+      const iter = fetchEvents(`${getAddress()}/multiple-data-fields`, {
         autoReconnect: false
       })
       const result = await toArrayAsync(iter)
@@ -171,7 +185,9 @@ describe('fetchEvents', () => {
     })
 
     test('single id field', async () => {
-      const iter = fetchEvents('http://localhost/single-id-field', { autoReconnect: false })
+      const iter = fetchEvents(`${getAddress()}/single-id-field`, {
+        autoReconnect: false
+      })
       const result = await toArrayAsync(takeAsync(iter, 1))
 
       expect(result).toStrictEqual([
@@ -186,7 +202,7 @@ describe('fetchEvents', () => {
     })
 
     test('multiple id fields', async () => {
-      const iter = fetchEvents('http://localhost/multiple-id-fields', {
+      const iter = fetchEvents(`${getAddress()}/multiple-id-fields`, {
         autoReconnect: false
       })
       const result = await toArrayAsync(iter)
@@ -203,7 +219,7 @@ describe('fetchEvents', () => {
     })
 
     test('single retry field', async () => {
-      const iter = fetchEvents('http://localhost/single-retry-field', {
+      const iter = fetchEvents(`${getAddress()}/single-retry-field`, {
         autoReconnect: false
       })
       const result = await toArrayAsync(iter)
@@ -220,7 +236,7 @@ describe('fetchEvents', () => {
     })
 
     test('multiple retry fields', async () => {
-      const iter = fetchEvents('http://localhost/multiple-retry-fields', {
+      const iter = fetchEvents(`${getAddress()}/multiple-retry-fields`, {
         autoReconnect: false
       })
       const result = await toArrayAsync(takeAsync(iter, 1))
@@ -237,7 +253,7 @@ describe('fetchEvents', () => {
     })
 
     test('edge: json', async () => {
-      const iter = fetchEvents('http://localhost/edge-json', {
+      const iter = fetchEvents(`${getAddress()}/edge-json`, {
         autoReconnect: false
       })
       const result = await toArrayAsync(iter)
@@ -260,7 +276,7 @@ describe('fetchEvents', () => {
       controller.abort()
 
       const iter = fetchEvents(
-        () => new Request('http://localhost/200', { signal: controller.signal })
+        () => new Request(`${getAddress()}/200`, { signal: controller.signal })
       , { autoReconnect: true }
       )
       const err = await getErrorPromise(toArrayAsync(iter))
@@ -272,7 +288,7 @@ describe('fetchEvents', () => {
       const controller = new AbortController()
 
       const iter = fetchEvents(
-        () => new Request('http://localhost/200', { signal: controller.signal })
+        () => new Request(`${getAddress()}/200`, { signal: controller.signal })
       , { autoReconnect: true }
       )
       const result = await toArrayAsync(takeAsync(iter, 1))
@@ -291,7 +307,7 @@ describe('fetchEvents', () => {
     test('abort signal', async () => {
       const signal = timeoutSignal(1000)
       const iter = fetchEvents(
-        () => new Request('http://localhost/200', { signal })
+        () => new Request(`${getAddress()}/200`, { signal })
       , { autoReconnect: true }
       )
       const err = await getErrorPromise(toArrayAsync(iter))
@@ -302,7 +318,7 @@ describe('fetchEvents', () => {
 
   describe('last event id', () => {
     test('set last event id', async () => {
-      const iter = fetchEvents('http://localhost/last-event-id', {
+      const iter = fetchEvents(`${getAddress()}/last-event-id`, {
         autoReconnect: true
       , lastEventId: '0'
       })
@@ -327,7 +343,7 @@ describe('fetchEvents', () => {
     })
 
     test('no last event id', async () => {
-      const iter = fetchEvents('http://localhost/last-event-id', {
+      const iter = fetchEvents(`${getAddress()}/last-event-id`, {
         autoReconnect: true
       , lastEventId: undefined
       })
@@ -356,7 +372,7 @@ describe('fetchEvents', () => {
     describe('enabled', () => {
       describe('retry', () => {
         test('set default retry', async () => {
-          const iter = fetchEvents('http://localhost/timestamp-without-retry', {
+          const iter = fetchEvents(`${getAddress()}/timestamp-without-retry`, {
             retry: 1000
           , autoReconnect: true
           })
@@ -384,7 +400,7 @@ describe('fetchEvents', () => {
         })
 
         test('event does not include retry', async () => {
-          const iter = fetchEvents('http://localhost/timestamp-without-retry', {
+          const iter = fetchEvents(`${getAddress()}/timestamp-without-retry`, {
             retry: 0
           , autoReconnect: true
           })
@@ -412,7 +428,7 @@ describe('fetchEvents', () => {
         })
 
         test('event includes retry', async () => {
-          const iter = fetchEvents('http://localhost/timestamp-with-retry', {
+          const iter = fetchEvents(`${getAddress()}/timestamp-with-retry`, {
             retry: undefined
           , autoReconnect: true
           })
@@ -451,7 +467,7 @@ describe('fetchEvents', () => {
       })
 
       test('edge: incorrect Content-Type', async () => {
-        const iter = fetchEvents('http://localhost/incorrect-content-type', {
+        const iter = fetchEvents(`${getAddress()}/incorrect-content-type`, {
           autoReconnect: true
         })
         const err = await getErrorPromise(toArrayAsync(iter))
@@ -460,7 +476,7 @@ describe('fetchEvents', () => {
       })
 
       test('200', async () => {
-        const iter = fetchEvents('http://localhost/200', { autoReconnect: true })
+        const iter = fetchEvents(`${getAddress()}/200`, { autoReconnect: true })
         const result =  await toArrayAsync(takeAsync(iter, 2))
 
         expect(result).toStrictEqual([
@@ -482,14 +498,14 @@ describe('fetchEvents', () => {
       })
 
       test('204', async () => {
-        const iter = fetchEvents('http://localhost/204', { autoReconnect: true })
+        const iter = fetchEvents(`${getAddress()}/204`, { autoReconnect: true })
         const result =  await toArrayAsync(iter)
 
         expect(result).toStrictEqual([])
       })
 
       test('3xx', async () => {
-        const iter = fetchEvents('http://localhost/302', { autoReconnect: true })
+        const iter = fetchEvents(`${getAddress()}/302`, { autoReconnect: true })
         const result =  await toArrayAsync(takeAsync(iter, 2))
 
         expect(result).toStrictEqual([
@@ -511,7 +527,7 @@ describe('fetchEvents', () => {
       })
 
       test('4xx', async () => {
-        const iter = fetchEvents('http://localhost/404', { autoReconnect: true })
+        const iter = fetchEvents(`${getAddress()}/404`, { autoReconnect: true })
         const err = await getErrorPromise(toArrayAsync(iter))
 
         expect(err).toBeInstanceOf(NotFound)
@@ -520,7 +536,7 @@ describe('fetchEvents', () => {
       test('5xx', async () => {
         const signal = timeoutSignal(1000)
         const iter = fetchEvents(
-          () => new Request('http://localhost/500', { signal })
+          () => new Request(`${getAddress()}/500`, { signal })
         , { autoReconnect: true }
         )
         const err = await getErrorPromise(toArrayAsync(iter))
@@ -531,7 +547,7 @@ describe('fetchEvents', () => {
 
     describe('disabled', () => {
       test('edge: incorrect Content-Type', async () => {
-        const iter = fetchEvents('http://localhost/incorrect-content-type', {
+        const iter = fetchEvents(`${getAddress()}/incorrect-content-type`, {
           autoReconnect: false
         })
         const err = await getErrorPromise(toArrayAsync(iter))
@@ -540,7 +556,7 @@ describe('fetchEvents', () => {
       })
 
       test('200', async () => {
-        const iter = fetchEvents('http://localhost/200', { autoReconnect: false })
+        const iter = fetchEvents(`${getAddress()}/200`, { autoReconnect: false })
         const result =  await toArrayAsync(iter)
 
         expect(result).toStrictEqual([
@@ -555,14 +571,14 @@ describe('fetchEvents', () => {
       })
 
       test('204', async () => {
-        const iter = fetchEvents('http://localhost/204', { autoReconnect: false })
+        const iter = fetchEvents(`${getAddress()}/204`, { autoReconnect: false })
         const result =  await toArrayAsync(iter)
 
         expect(result).toStrictEqual([])
       })
 
       test('3xx', async () => {
-        const iter = fetchEvents('http://localhost/302', { autoReconnect: false })
+        const iter = fetchEvents(`${getAddress()}/302`, { autoReconnect: false })
         const result =  await toArrayAsync(iter)
 
         expect(result).toStrictEqual([
@@ -577,14 +593,14 @@ describe('fetchEvents', () => {
       })
 
       test('4xx', async () => {
-        const iter = fetchEvents('http://localhost/404', { autoReconnect: false })
+        const iter = fetchEvents(`${getAddress()}/404`, { autoReconnect: false })
         const err = await getErrorPromise(toArrayAsync(iter))
 
         expect(err).toBeInstanceOf(NotFound)
       })
 
       test('5xx', async () => {
-        const iter = fetchEvents('http://localhost/500', { autoReconnect: false })
+        const iter = fetchEvents(`${getAddress()}/500`, { autoReconnect: false })
         const err = await getErrorPromise(toArrayAsync(iter))
 
         expect(err).toBeInstanceOf(InternalServerError)
@@ -595,7 +611,7 @@ describe('fetchEvents', () => {
   test('onOpen', async () => {
     const onOpen = vi.fn()
 
-    const iter = fetchEvents('http://localhost/200', { onOpen, autoReconnect: true })
+    const iter = fetchEvents(`${getAddress()}/200`, { onOpen, autoReconnect: true })
     await toArrayAsync(takeAsync(iter, 2))
 
     expect(onOpen).toBeCalledTimes(2)

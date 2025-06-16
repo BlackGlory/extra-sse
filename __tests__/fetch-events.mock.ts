@@ -1,11 +1,12 @@
-import { setupServer } from 'msw/node'
-import { http } from 'msw'
+import { fastify } from 'fastify'
 import { delay } from 'extra-promise'
 import { toReadableStream } from 'extra-stream'
-import { go } from '@blackglory/prelude'
+import { assert, go, isntArray } from '@blackglory/prelude'
 
-export const server = setupServer(
-  http.get('http://localhost/200', () => {
+export function buildServer() {
+  const server = fastify()
+
+  server.get('/200', () => {
     return new Response(
       ': foo' + '\n'
     + '\n'
@@ -19,33 +20,38 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/204', () => {
+  server.get('/204', () => {
     return new Response(null, { status: 204 })
   })
 
-, http.get('http://localhost/302', () => {
+  server.get('/302', () => {
     return new Response('', {
       status: 302
     , headers: {
-        'Location': 'http://localhost/200'
+        'Location': '/200'
       }
     })
   })
 
-, http.get('http://localhost/404', () => {
+  server.get('/404', () => {
     return new Response('', { status: 404 })
   })
 
-, http.get('http://localhost/500', () => {
+  server.get('/500', () => {
     return new Response('', { status: 500 })
   })
 
-, http.get('http://localhost/last-event-id', ({ request }) => {
-    const lastEventId = request.headers.get('Last-Event-ID')
+  server.get('/last-event-id', request => {
+    const lastEventId = request.headers['last-event-id']
+    assert(isntArray(lastEventId))
 
     return new Response(
-      `data: ${lastEventId}` + '\n'
-    + `id: ${lastEventId ? Number.parseInt(lastEventId, 10) + 1 : 0}` + '\n'
+      `data: ${lastEventId ?? 'null'}` + '\n'
+    + `id: ${
+        lastEventId
+      ? Number.parseInt(lastEventId, 10) + 1
+      : 0
+      }` + '\n'
     + '\n'
     , {
         status: 200
@@ -57,12 +63,17 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/timestamp-without-retry', ({ request }) => {
-    const lastEventId = request.headers.get('Last-Event-ID')
+  server.get('/timestamp-without-retry', request => {
+    const lastEventId = request.headers['last-event-id']
+    assert(isntArray(lastEventId))
 
     return new Response(
       `data: ${Date.now()}` + '\n'
-    + `id: ${lastEventId ? Number.parseInt(lastEventId, 10) + 1 : 0}` + '\n'
+    + `id: ${
+        lastEventId
+      ? Number.parseInt(lastEventId, 10) + 1
+      : 0
+      }` + '\n'
     + '\n'
     , {
         status: 200
@@ -74,12 +85,17 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/timestamp-with-retry', ({ request }) => {
-    const lastEventId = request.headers.get('Last-Event-ID')
+  server.get('/timestamp-with-retry', request => {
+    const lastEventId = request.headers['last-event-id']
+    assert(isntArray(lastEventId))
 
     return new Response(
       `data: ${Date.now()}` + '\n'
-    + `id: ${lastEventId ? Number.parseInt(lastEventId, 10) + 1 : 0}` + '\n'
+    + `id: ${
+        lastEventId
+      ? Number.parseInt(lastEventId, 10) + 1
+      : 0
+      }` + '\n'
     + `retry: ${lastEventId ? 1000 : 500}` + '\n'
     + '\n'
     , {
@@ -92,7 +108,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/incorrect-content-type', () => {
+  server.get('/incorrect-content-type', () => {
     return new Response(
       ': foo' + '\n'
     + '\n'
@@ -100,7 +116,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/single-event', () => {
+  server.get('/single-event', () => {
     return new Response(
       ': foo' + '\n'
     + 'event: bar' + '\n'
@@ -118,7 +134,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-events-single-packet', () => {
+  server.get('/multiple-events-single-packet', () => {
     return new Response(
       ': foo' + '\n'
     + 'event: foo' + '\n'
@@ -143,7 +159,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-events-multiple-packets', () => {
+  server.get('/multiple-events-multiple-packets', () => {
     return new Response(
       toReadableStream(go(async function* () {
         yield ': foo' + '\n'
@@ -172,7 +188,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/single-comment-field', () => {
+  server.get('/single-comment-field', () => {
     return new Response(
       ': foo' + '\n'
     + '\n'
@@ -186,7 +202,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-comment-fields', () => {
+  server.get('/multiple-comment-fields', () => {
     return new Response(
       ': foo' + '\n'
     + ': bar' + '\n'
@@ -201,7 +217,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/single-event-field', () => {
+  server.get('/single-event-field', () => {
     return new Response(
       'event: foo' + '\n'
     + '\n'
@@ -215,7 +231,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-event-fields', () => {
+  server.get('/multiple-event-fields', () => {
     return new Response(
       'event: foo' + '\n'
     + 'event: bar' + '\n'
@@ -230,7 +246,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/single-data-field', () => {
+  server.get('/single-data-field', () => {
     return new Response(
       'data: foo' + '\n'
     + '\n'
@@ -244,7 +260,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-data-fields', () => {
+  server.get('/multiple-data-fields', () => {
     return new Response(
       'data: foo' + '\n'
     + 'data: bar' + '\n'
@@ -259,7 +275,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/single-id-field', () => {
+  server.get('/single-id-field', () => {
     return new Response(
       'id: foo' + '\n'
     + '\n'
@@ -273,7 +289,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-id-fields', () => {
+  server.get('/multiple-id-fields', () => {
     return new Response(
       'id: foo' + '\n'
     + 'id: bar' + '\n'
@@ -288,7 +304,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/single-retry-field', () => {
+  server.get('/single-retry-field', () => {
     return new Response(
       'retry: 1' + '\n'
     + '\n'
@@ -302,7 +318,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/multiple-retry-fields', () => {
+  server.get('/multiple-retry-fields', () => {
     return new Response(
       'retry: 1' + '\n'
     + 'retry: 2' + '\n'
@@ -317,7 +333,7 @@ export const server = setupServer(
     )
   })
 
-, http.get('http://localhost/edge-json', () => {
+  server.get('/edge-json', () => {
     return new Response(
       'data: { "foo": "bar" }' + '\n'
     + '\n'
@@ -330,4 +346,6 @@ export const server = setupServer(
       }
     )
   })
-)
+
+  return server
+}
