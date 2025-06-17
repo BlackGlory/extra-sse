@@ -1,7 +1,7 @@
 import { fastify } from 'fastify'
 import { delay } from 'extra-promise'
 import { toReadableStream } from 'extra-stream'
-import { assert, go, isntArray } from '@blackglory/prelude'
+import { go } from '@blackglory/prelude'
 
 export function buildServer() {
   const server = fastify()
@@ -41,9 +41,12 @@ export function buildServer() {
     return new Response('', { status: 500 })
   })
 
-  server.get('/last-event-id', request => {
+  server.get<{
+    Headers: {
+      'last-event-id': string
+    }
+  }>('/last-event-id', request => {
     const lastEventId = request.headers['last-event-id']
-    assert(isntArray(lastEventId))
 
     return new Response(
       `data: ${lastEventId ?? 'null'}` + '\n'
@@ -63,9 +66,12 @@ export function buildServer() {
     )
   })
 
-  server.get('/timestamp-without-retry', request => {
+  server.get<{
+    Headers: {
+      'last-event-id': string
+    }
+  }>('/timestamp-without-retry', request => {
     const lastEventId = request.headers['last-event-id']
-    assert(isntArray(lastEventId))
 
     return new Response(
       `data: ${Date.now()}` + '\n'
@@ -85,9 +91,12 @@ export function buildServer() {
     )
   })
 
-  server.get('/timestamp-with-retry', request => {
+  server.get<{
+    Headers: {
+      'last-event-id': string
+    }
+  }>('/timestamp-with-retry', request => {
     const lastEventId = request.headers['last-event-id']
-    assert(isntArray(lastEventId))
 
     return new Response(
       `data: ${Date.now()}` + '\n'
